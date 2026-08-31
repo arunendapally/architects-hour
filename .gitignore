@@ -1,0 +1,7 @@
+myDocs-gitignore/
+.claude/settings.local.json
+
+# .NET build artifacts
+bin/
+obj/
+
