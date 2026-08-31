@@ -1,109 +1,81 @@
-# D1 — The first model call, from .NET
+# Day 1 — The first model call, from .NET
 
-*The Architect's Hour, Day 1 — Mon 31 Aug 2026.*
+*The Architect's Hour — Mon 31 Aug 2026.*
 
-A console app that sends a prompt to a model and prints the answer. Then I made it
-talk to *two different model backends* — the Oracle that gives you those magic words.
+**A model call is just an HTTP POST.** No SDK, no framework, no client library —
+`HttpClient` and `System.Text.Json` are enough to talk to a language model. That's the
+whole lesson, and this CLI is the proof.
 
-## The thing I actually built
-
-A tiny, dependency-free CLI that opens a socket to a language model and says hello:
-
-```
-dotnet run -- --provider=nvidia --prompt "Explain an API gateway in 3 sentences."
-
---- nvidia : Explain an API gateway in 3 sentences ---
-An API gateway is a server that acts as the single entry point for client requests,
-routing them to the appropriate backend services...
-──────────────────────────────────────────────────────────
-Input: 34 tokens   Output: 336 tokens   Total: 370   Latency: 33967 ms
-```
-
-No framework. No SDK. Just `HttpClient` + `System.Text.Json` — because this whole week
-is about doing the thing by hand once, so no framework can ever confuse me about what
-it's actually doing underneath.
-
-## The "generic interface" — the part that paid for itself
-
-Two conversations later I had a second provider to add (NVIDIA NIM). The scariest
-moment in any "swap the backend" story is the second one — that's when you find out
-your abstraction was a lie.
-
-Here it wasn't. Both providers speak the same OpenAI-shape wire protocol, so:
+## The part that matters
 
 ```csharp
-public interface IModelClient
+var payload = new Dictionary<string, object?>
 {
-    Task<ModelResponse> CompleteAsync(string system, string user, CancellationToken ct = default);
-}
+    ["model"] = Model,
+    ["messages"] = new object[]
+    {
+        new { role = "system", content = system },
+        new { role = "user",   content = user },
+    },
+};
 
-public record ModelResponse(string Content, int InputTokens, int OutputTokens, TimeSpan Latency);
+using var req = new HttpRequestMessage(HttpMethod.Post, ChatCompletionsUrl)
+{
+    Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"),
+};
+req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", BearerToken);
+
+using var resp = await _http.SendAsync(req, ct);
 ```
 
-Adding NVIDIA was **one new file** — supply the endpoint, the model name, the bearer
-token — and everything else (POST, parse, usage numbers) came from the shared base:
+The answer comes back at `choices[0].message.content`, the cost at `usage`. That's it.
+Everything a vendor SDK does sits on top of these twenty lines.
 
-```csharp
-// OmniRouteClient.cs  — the local aggregator proxy
-protected override Uri ChatCompletionsUrl => new($"{_endpoint}/chat/completions");
-protected override string Model => _model;
-protected override string BearerToken => _token;
+Because it's just a URL, a model name, and a bearer token, pointing at a *second*
+provider was one small subclass — same POST, same parsing, different endpoint. Both
+OmniRoute and NVIDIA speak the OpenAI `chat/completions` shape, so
+[`OpenAiCompatibleClient`](Providers/OpenAiCompatibleClient.cs) does the work and each
+provider file is ~30 lines.
 
-// NvidiaNimClient.cs   — NVIDIA NIM
-protected override Uri ChatCompletionsUrl => _url;
-protected override string Model => _model;
-protected override string BearerToken => _token;
-```
+![Two runs of the same CLI, one against NVIDIA NIM and one against OmniRoute, showing identical output formatting with different token counts and latency](assets/two-providers.png)
 
-If I'd hardcoded "openai/gpt-4o", the second provider would've been a copy-paste fork.
-Because the transport was behind one interface, it was a subclass. That's the
-generic-interface payoff, and it showed up on day 1.
+Same command, two backends, identical output shape — only the numbers move. Worth
+staring at those numbers: `"hi"` cost 23 input tokens on one backend and 123 on the
+other, and 370 output tokens bought a two-word reply. You're billed for tokens you
+never see.
 
-## What actually bit me (the honest part)
-
-**1. "No active credentials" — the alias, not the provider.**
-I pointed at `openai/gpt-4o` on my local aggregator and got `No active credentials for
-provider: openai`. But the machine was already talking to the model fine. The fix was a
-named **alias** (`auto/best-free`), not a provider/model combo. The client config, not
-the bytes, decides what you're hitting.
-
-**2. Models are perishable.**
-NVIDIA retires hosted models fast. My first two defaults returned `HTTP 410 end-of-life`
-— the model was retired a week before I looked at it. The third timed out. Lesson:
-never assume a model ID stays alive; check the catalog.
-
-**3. A reasoning model that won't talk until you ask.**
-The NVIDIA model sat silent for 100 s and timed out. NVIDIA's own sample was the clue:
-reasoning models return *nothing* unless you send
-`chat_template_kwargs: { enable_thinking: true }`. One grabbed sentence of docs was
-worth more than an hour of guessing.
-
-## Secrets in a public repo
-
-Keys never touch a committed file. `.gitignore` + `dotnet user-secrets`: the app reads
-`env var → user-secret → default`. Public repo stays clean, prod just sets an env var.
+## Run it
 
 ```bash
-# first time — set your NVIDIA key (stored in %APPDATA%\Microsoft\UserSecrets)
-dotnet user-secrets set "NVIDIA_API_KEY" "your-key-here"
-
-# or, in prod / CI — set an env var instead (takes precedence over user-secrets)
-export NVIDIA_API_KEY="your-key-here"
+dotnet run -- --provider=nvidia    --prompt "Explain an API gateway in 3 sentences."
+dotnet run -- --provider=omniroute --prompt "Say hi"
+echo "Say hi" | dotnet run -- --provider=omniroute
 ```
 
-OmniRoute needs no key — it's a local proxy with no auth gate.
+Optional: `--model`, `--temperature`, `--top-p`.
 
-## The stack, on one page
+**OmniRoute** — a local gateway that routes through free-tier providers. Runs on
+`localhost:20128`, no API key. Setup:
+[my write-up](https://arunendapally.com/posts/omniroute-free-tier-routing-and-compression/).
 
+**NVIDIA NIM** — grab a free key at [build.nvidia.com](https://build.nvidia.com/), then:
+
+```bash
+dotnet user-secrets set "NVIDIA_API_KEY" "your-key-here"   # or set the env var
 ```
-model → prompt → retrieval → tools → agent → evaluation
-   ↑ (this is today: the very first hop)
-```
 
-Today was the *model* box. The rest of the week fills in whichever I need — but nothing
-builds on a foundation I can't touch by hand.
+Keys never touch a committed file — config resolves `env var → user-secret → default`.
+
+## What bit me
+
+- **Models are perishable.** Two NVIDIA defaults returned `HTTP 410 end-of-life`; one
+  had been retired the week before. Never assume a model ID is still alive.
+- **Reasoning models stay silent until asked.** The NVIDIA model returned nothing and
+  timed out until I sent `chat_template_kwargs: { enable_thinking: true }`.
+- **The alias is the config, not the model.** `openai/gpt-4o` gave me "no active
+  credentials" on a gateway that was working fine. The fix was a named alias
+  (`auto/best-free`) — what you *point at* decides what you hit.
 
 ---
 
-*Code lives in [`week1/01-first-call-to-model-dotnet/`](.). Build notes and deferred
-ideas are in my private notes, not this repo.*
+*Design notes in [`SPEC.md`](SPEC.md).*
