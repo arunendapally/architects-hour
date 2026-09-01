@@ -1,10 +1,13 @@
 # The Architect's Hour
 
-One hour a day, building the AI-application stack by hand — model, prompt,
-retrieval, tools, agent, evaluation — one box at a time.
+Learning how to build AI *into applications* — model, prompt, retrieval, tools,
+agent, evaluation — one box at a time, by hand, in .NET. One hour a day.
 
-Each day is a self-contained project with its own `README.md` (what I built and
-what bit me) and `SPEC.md` (what I set out to build, before I built it).
+This is about putting AI in the software you ship. It isn't about using AI
+assistants to write code. Every day is a working app you can clone and run.
+
+Each day is a self-contained project with a `README.md` (what's in the code, how
+to set it up, how to run it) and a `SPEC.md` (what was planned, before building).
 
 ## Week 1 — By hand, before any framework
 
