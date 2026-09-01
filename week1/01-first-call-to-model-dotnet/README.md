@@ -1,6 +1,7 @@
 # Day 1 — Calling a model from .NET
 
-*The Architect's Hour — Mon 31 Aug 2026.*
+*Part of [**The Architect's Hour**](../../) — learning to build AI into applications,
+one hour a day. Mon 31 Aug 2026.*
 
 A console app that sends a prompt to a language model and prints the answer.
 
