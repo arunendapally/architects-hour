@@ -20,7 +20,7 @@ public class NvidiaNimClient : OpenAiCompatibleClient
     private readonly string _token;
 
     public NvidiaNimClient(HttpClient http, string token, string model, string? baseUrl = null,
-        double? temperature = null, double? topP = null) : base(http, temperature, topP)
+        RequestOptions? options = null) : base(http, options)
     {
         _url = new Uri(baseUrl ?? DefaultUrl);
         _model = model;
@@ -28,12 +28,12 @@ public class NvidiaNimClient : OpenAiCompatibleClient
     }
 
     public static NvidiaNimClient FromEnv(HttpClient http, IConfiguration config,
-        string? modelOverride = null, double? temperature = null, double? topP = null)
+        string? modelOverride = null, RequestOptions? options = null)
     {
         var token = config["NVIDIA_API_KEY"]
             ?? throw new InvalidOperationException("Set NVIDIA_API_KEY (env var or 'dotnet user-secrets set NVIDIA_API_KEY ...')");
         var model = modelOverride ?? config["NVIDIA_NIM_MODEL"] ?? DefaultModel;
-        return new NvidiaNimClient(http, token, model, baseUrl: null, temperature, topP);
+        return new NvidiaNimClient(http, token, model, baseUrl: null, options);
     }
 
     protected override Uri ChatCompletionsUrl => _url;

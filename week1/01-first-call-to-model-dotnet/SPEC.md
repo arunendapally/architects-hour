@@ -20,9 +20,10 @@ echo "..." | dotnet run -- --provider=omniroute
 |---|---|---|
 | `--provider` | — | `omniroute` |
 | `--prompt` | — (else stdin) | — |
-| `--model` | provider-specific (`ANTHROPIC_MODEL`, `NVIDIA_NIM_MODEL`) | provider default |
+| `--model` | provider-specific (`OMNIROUTE_MODEL`, `NVIDIA_NIM_MODEL`) | provider default |
 | `--temperature` | — | model default |
 | `--top-p` | — | model default |
+| `--raw` | — | off — echo request/response bodies to stderr |
 
 ## Provider layer
 One thin abstraction. All providers return the same shape.
@@ -34,6 +35,7 @@ public interface IModelClient
 }
 
 public record ModelResponse(string Content, int InputTokens, int OutputTokens, TimeSpan Latency);
+public record RequestOptions(double? Temperature = null, double? TopP = null, bool Raw = false);
 ```
 
 `Latency` measured in one place (the caller) so it's comparable across
@@ -43,7 +45,7 @@ providers regardless of transport details.
 
 | Provider | Endpoint | Config |
 |---|---|---|
-| `omniroute` | `POST {ANTHROPIC_BASE_URL}/chat/completions` | `ANTHROPIC_BASE_URL`, `ANTHROPIC_AUTH_TOKEN` |
+| `omniroute` | `POST {OMNIROUTE_BASE_URL}/chat/completions` | `OMNIROUTE_BASE_URL`, `OMNIROUTE_AUTH_TOKEN` |
 | `nvidia` | `POST https://integrate.api.nvidia.com/v1/chat/completions` | `NVIDIA_API_KEY`, optional `NVIDIA_NIM_MODEL` |
 
 Both speak the OpenAI chat.completions shape, so they share the

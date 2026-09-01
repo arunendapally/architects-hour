@@ -15,8 +15,10 @@ var config = new ConfigurationBuilder()
 var provider = Arg("--provider", "omniroute");
 var prompt = Arg("--prompt", null) ?? ReadStdinFallback();
 var modelOverride = Arg("--model", null);
-var temperature = ArgDouble("--temperature", null);
-var topP = ArgDouble("--top-p", null);
+var options = new RequestOptions(
+    Temperature: ArgDouble("--temperature", null),
+    TopP: ArgDouble("--top-p", null),
+    Raw: args.Contains("--raw"));
 
 if (string.IsNullOrWhiteSpace(prompt))
 {
@@ -34,8 +36,8 @@ try
 {
     IModelClient client = provider switch
     {
-        "omniroute" => OmniRouteClient.FromEnv(http, config, modelOverride, temperature, topP),
-        "nvidia" => NvidiaNimClient.FromEnv(http, config, modelOverride, temperature, topP),
+        "omniroute" => OmniRouteClient.FromEnv(http, config, modelOverride, options),
+        "nvidia" => NvidiaNimClient.FromEnv(http, config, modelOverride, options),
         _ => throw new InvalidOperationException(
             $"Unknown provider: {provider}. Expected 'omniroute' or 'nvidia'."),
     };

@@ -5,6 +5,10 @@ namespace D1;
 /// <summary>One model completion, normalized across providers.</summary>
 public record ModelResponse(string Content, int InputTokens, int OutputTokens, TimeSpan Latency);
 
+/// <summary>Per-call knobs. Sampling values are omitted from the request when null.</summary>
+/// <param name="Raw">Echo the request and response bodies to stderr.</param>
+public record RequestOptions(double? Temperature = null, double? TopP = null, bool Raw = false);
+
 /// <summary>Thin provider abstraction — one completion = one call.</summary>
 public interface IModelClient
 {

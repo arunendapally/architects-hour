@@ -11,16 +11,15 @@ namespace D1.Providers;
 /// </summary>
 public abstract class OpenAiCompatibleClient : ModelClientBase
 {
-    private readonly HttpClient _http;
-    private readonly double? _temperature;
-    private readonly double? _topP;
+    private static readonly JsonSerializerOptions Indented = new() { WriteIndented = true };
 
-    /// <summary>Sampling parameters are optional; they're omitted from the request when null.</summary>
-    protected OpenAiCompatibleClient(HttpClient http, double? temperature, double? topP)
+    private readonly HttpClient _http;
+    private readonly RequestOptions _options;
+
+    protected OpenAiCompatibleClient(HttpClient http, RequestOptions? options = null)
     {
         _http = http;
-        _temperature = temperature;
-        _topP = topP;
+        _options = options ?? new RequestOptions();
     }
 
     protected abstract Uri ChatCompletionsUrl { get; }
@@ -45,17 +44,38 @@ public abstract class OpenAiCompatibleClient : ModelClientBase
         };
         foreach (var (k, v) in ExtraBody())
             payload[k] = v;
-        if (_temperature is not null) payload["temperature"] = _temperature;
-        if (_topP is not null) payload["top_p"] = _topP;
+        if (_options.Temperature is not null) payload["temperature"] = _options.Temperature;
+        if (_options.TopP is not null) payload["top_p"] = _options.TopP;
+
+        var body = JsonSerializer.Serialize(payload);
+
+        // --raw: show exactly what goes out and comes back. Diagnostics go to stderr so
+        // stdout stays a clean, pipeable answer. The bearer token is never printed.
+        if (_options.Raw)
+        {
+            Console.Error.WriteLine($"→ POST {ChatCompletionsUrl}");
+            Console.Error.WriteLine("  Content-Type: application/json");
+            Console.Error.WriteLine("  Authorization: Bearer <redacted>");
+            Console.Error.WriteLine(Prettify(body));
+            Console.Error.WriteLine();
+        }
 
         using var req = new HttpRequestMessage(HttpMethod.Post, ChatCompletionsUrl)
         {
-            Content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json"),
+            Content = new StringContent(body, Encoding.UTF8, "application/json"),
         };
         req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", BearerToken);
 
         using var resp = await _http.SendAsync(req, ct);
         var raw = await resp.Content.ReadAsStringAsync(ct);
+
+        if (_options.Raw)
+        {
+            Console.Error.WriteLine($"← HTTP {(int)resp.StatusCode} {resp.ReasonPhrase}");
+            Console.Error.WriteLine(Prettify(raw));
+            Console.Error.WriteLine();
+        }
+
         if (!resp.IsSuccessStatusCode)
             throw new InvalidOperationException($"HTTP {(int)resp.StatusCode}: {raw}");
 
@@ -83,5 +103,19 @@ public abstract class OpenAiCompatibleClient : ModelClientBase
         }
 
         return (content, input, output);
+    }
+
+    /// <summary>Indent JSON for reading; hand back the original if it isn't JSON (error pages aren't).</summary>
+    private static string Prettify(string json)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            return JsonSerializer.Serialize(doc.RootElement, Indented);
+        }
+        catch (JsonException)
+        {
+            return json;
+        }
     }
 }
