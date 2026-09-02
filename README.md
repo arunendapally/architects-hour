@@ -14,6 +14,7 @@ to set it up, how to run it) and a `SPEC.md` (what was planned, before building)
 | Day | Lesson | Stack |
 |---|---|---|
 | 01 | [The first model call, from .NET](week1/01-first-call-to-model-dotnet/) — a provider-agnostic CLI, raw `HttpClient`, two model backends behind one interface | .NET 9 |
+| 02 | [RAG by hand, no framework](week1/02-rag-by-hand/) — chunk a document, get embeddings, cosine similarity in own code, stuff top chunks into prompt | .NET 9 |
 
 ## Running anything here
 

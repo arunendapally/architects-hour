@@ -1,0 +1,96 @@
+The Architect's Hour is a daily practice where one person spends one focused hour each
+weekday building AI applications by hand. The goal is not to use AI assistants to write
+code, but to build AI into software, component by component. Each day produces a working
+application rather than a workflow tip, and each day is small enough to read in one sitting.
+
+The stack under study has six parts in order: model, prompt, retrieval, tools, agent,
+and evaluation. Each day of the first week targets the model box and the retrieval box.
+Day 1 taught the first model call from .NET: a provider-agnostic console app that sends a
+prompt over raw HTTP and prints the response, plus token counts and latency.
+
+The model box is one POST and one answer, priced in tokens. A token is a fragment of text,
+usually a common word or a piece of a longer word. Providers bill separately for input
+tokens and output tokens, and output is almost always the more expensive of the two. Every
+response carries a usage block reporting how many of each the request consumed, which is
+the only honest way to reason about what a feature costs to run at scale.
+
+Calling a model over raw HTTP means building the request yourself. The body carries a model
+name, a messages array, and whatever sampling settings the provider accepts. The messages
+array is a list of role and content pairs, where the roles are typically system, user, and
+assistant. A vendor SDK hides all of this behind a method call, which is convenient once
+you already know what the method is sending on your behalf.
+
+The prompt box is what you put in that messages array, and how you version it over time.
+A system message sets standing instructions that apply to the whole conversation. User
+messages carry the actual request. Assistant messages carry the model's prior turns, which
+is how a stateless endpoint is made to feel like a conversation: you resend the history
+every time. Nothing is remembered on the server between calls unless you send it again.
+
+Day 2 is retrieval. Retrieval means taking a document, cutting it into chunks, turning
+each chunk into a vector with an embedding model, and then finding the chunks most similar
+to a question. The most common similarity measure is cosine similarity, which compares the
+angle between two vectors rather than their raw distance.
+
+A chunk is just a slice of text. The size of a chunk matters: chunks that are too small
+carry too little context to answer a question, and chunks that are too large drown the
+answer in unrelated sentences. A common choice is a few hundred words per chunk with a
+little overlap between neighbors so no meaning is lost at the seam.
+
+Sentence-aware chunking avoids cutting text in the middle of a sentence. The text is split
+on sentence-ending punctuation first, and whole sentences are then merged until the chunk
+reaches its target word count. Because a boundary can still land badly, adjacent chunks
+share a small tail of overlapping words, so a fact that straddles a seam appears in full
+in at least one of the two chunks.
+
+An embedding model converts text into a list of numbers called a vector. Similar texts
+produce similar vectors, so comparing vectors is a cheap way to compare meaning. Embedding
+models are usually batch-oriented: you can send many texts in one request and get a vector
+back for each one, in the same order.
+
+The number of values in a vector is called its dimension, and it is fixed by the model.
+Two vectors can only be compared if they came from the same embedding model, because the
+dimensions carry no shared meaning across models. Some embedding models also want to know
+whether the text being embedded is a stored document or a search query, and produce
+slightly different vectors for each, which improves retrieval quality noticeably.
+
+The hand-built approach means no vector database and no retrieval framework. The entire
+retrieval step is a normalized dot product: to compare two vectors, make each one unit
+length and multiply them element by element, then add up the products. Scores of nine
+tenths and above usually mean the texts are closely related.
+
+Normalizing a vector to unit length divides every value in it by the square root of the
+sum of its squares. Once both vectors are unit length, the dot product and the cosine of
+the angle between them are the same number, which is why a full cosine formula is not
+needed in the code. The result always falls between minus one and one, and ranking by it
+is simply a sort.
+
+Searching without a vector database means holding every chunk vector in memory and scoring
+all of them on each query. This is a linear scan, and for a few thousand chunks it finishes
+faster than the network call that produced the query vector. A vector database earns its
+place only when the corpus grows past what a linear scan can serve inside the latency
+budget, which is much later than most projects assume.
+
+After retrieval, the top chunks are stuffed into the prompt verbatim, in order, and the
+model is asked to answer using only that context. This keeps the model from inventing
+facts: if the context does not answer the question, the model is instructed to say so
+instead of guessing.
+
+The number of chunks retrieved is usually called top k. A small k keeps the prompt cheap
+and focused but risks missing the one chunk that held the answer. A large k is more likely
+to contain the answer somewhere, but it also fills the prompt with near misses that the
+model has to read past, and it raises the input token count on every single request.
+
+Three mistakes commonly break a hand-built retrieval pipeline. Chunking that splits
+sentences in half. Embedding a query with a different model than the one used for the
+document chunks. And normalizing vectors only sometimes, so cosine similarity stops
+comparing angles and starts comparing lengths.
+
+Retrieval quality is easier to judge than answer quality, and it should be judged first.
+If the right chunk never reaches the prompt, no amount of prompt wording will rescue the
+answer. The cheapest useful check is to print the indices of the retrieved chunks for a
+handful of known questions and read them, before trusting anything the model says on top.
+
+The remaining boxes come later in the series. Tools let the model ask the calling program
+to run something and then hand back the result. An agent is a loop over the model and
+those tools that decides for itself when the work is done. Evaluation is how you know the
+whole thing still works after someone changes a prompt.

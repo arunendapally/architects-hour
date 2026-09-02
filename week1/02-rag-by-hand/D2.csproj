@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <!-- Same secrets store as D1 so NVIDIA_API_KEY resolves here too. -->
+    <UserSecretsId>428e8166-f271-4d1d-899a-93932b11efbb</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Chat hop is unchanged from Day 1; D2 only adds the retrieval half. -->
+    <ProjectReference Include="../01-first-call-to-model-dotnet/D1.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.11" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.11" />
+  </ItemGroup>
+
+</Project>
