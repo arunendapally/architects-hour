@@ -15,6 +15,7 @@ to set it up, how to run it) and a `SPEC.md` (what was planned, before building)
 |---|---|---|
 | 01 | [The first model call, from .NET](week1/01-first-call-to-model-dotnet/) — a provider-agnostic CLI, raw `HttpClient`, two model backends behind one interface | .NET 9 |
 | 02 | [RAG by hand, no framework](week1/02-rag-by-hand/) — chunk a document, get embeddings, cosine similarity in own code, stuff top chunks into prompt | .NET 9 |
+| 03 | [Break it on purpose](week1/03-break-it-on-purpose/) — run the pipeline with a broken char-based chunker, capture the wrong answers verbatim | .NET 9 |
 
 ## Running anything here
 
