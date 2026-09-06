@@ -1,0 +1,6 @@
+Quarterly notes — Q3 2026
+=========================
+Product launch pushed from October to December.
+Headcount frozen for the rest of the year; no new hires.
+Server budget approved at $1,400/month.
+The Frankfurt data center goes live November 15.
