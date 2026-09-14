@@ -186,8 +186,8 @@ between adjacent chunks prevents losing context at the seam.
 
 ```
    model  →  prompt  →  retrieval  →  tools  →  agent  →  evaluation
-                                     ▲
-                                  you are here
+                            ▲
+                      you are here
 ```
 
 | Box | What it is |
@@ -200,5 +200,9 @@ between adjacent chunks prevents losing context at the seam.
 | **evaluation** | how you know it still works after you change a prompt |
 
 ---
+
+**Is the 250-word chunk size a magic number?** No, and
+[Day 5](../05-chunking-lab/) measures it: recall@k for this chunker, a
+paragraph-aware one, and D3's broken one, across six sizes.
 
 *Design notes in [`SPEC.md`](SPEC.md).*

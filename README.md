@@ -17,6 +17,7 @@ to set it up, how to run it) and a `SPEC.md` (what was planned, before building)
 | 02 | [RAG by hand, no framework](week1/02-rag-by-hand/) — chunk a document, get embeddings, cosine similarity in own code, stuff top chunks into prompt | .NET 9 |
 | 03 | [Break it on purpose](week1/03-break-it-on-purpose/) — run the pipeline with a broken char-based chunker, capture the wrong answers verbatim | .NET 9 |
 | 04 | [Your first tool-calling agent](week1/04-tool-calling-agent/) — one function the model can call (read a file), and the hand-built loop that lets it decide when | .NET 9 |
+| 05 | [Chunking lab: the right way to chunk, with evidence](week1/05-chunking-lab/) — a paragraph-aware chunker and a recall@k sweep that answers "what's the right chunk size?" with a table | .NET 9 |
 
 ## Running anything here
 

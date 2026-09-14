@@ -1,0 +1,108 @@
+Acme Staff Handbook
+
+Welcome to Acme. This handbook collects the rules and benefits every employee should
+know. It is organized by topic; if you cannot find an answer here, ask the People team
+rather than guessing.
+
+Vacation is earned at the rate of two days per month, for a total of twenty-four days
+per year. Vacation does not carry over to the next calendar year, so plan to use your
+days before December 31. Requests are approved on a first-come, first-served basis within
+each team, and no more than ten employees may be on vacation from the same team at once.
+
+Sick leave is separate from vacation and does not reduce your vacation balance. You may
+take up to ten paid sick days per year. If you are ill for more than three consecutive
+days, you must provide a doctor's note on your return.
+
+The office observes nine public holidays each year. The list is published every January
+in the internal calendar. When a public holiday falls on a weekend, the following Monday
+is given instead.
+
+The standard work week is forty hours, Monday through Friday. Core hours are ten in the
+morning to four in the afternoon, during which every employee must be available. Outside
+core hours, you may arrange your schedule with your manager.
+
+Remote work is allowed for up to two days per week with manager approval. Fully remote
+positions require a written arrangement signed by both the employee and the head of
+People. Internet reimbursement is capped at fifty dollars per month for remote workers.
+
+New employees receive a laptop and a second monitor within their first week. The standard
+laptop is the ThinkPad T14s. You may request a different model, but the request must be
+approved by IT and can delay delivery by up to three weeks.
+
+Software purchases under two hundred dollars do not need approval and are reimbursed the
+following pay cycle. Purchases above two hundred dollars must be approved by your manager
+before you buy. Cloud services with monthly recurring costs always require approval,
+regardless of amount.
+
+The travel policy requires all flights to be booked at least fourteen days in advance to
+qualify for the best fare. Economy class is standard for flights under six hours. Business
+class is permitted for flights longer than six hours with a manager's pre-approval.
+
+Accommodation during travel is reimbursed up to two hundred and fifty dollars per night.
+Meals are reimbursed up to sixty dollars per day. You must submit receipts within thirty
+days of returning from a trip, or the expenses will not be paid.
+
+The annual learning budget is one thousand dollars per employee. It can be spent on
+courses, books, or conference tickets, but not on hardware. Unused budget does not roll
+over to the next year.
+
+Each employee receives a health insurance plan chosen from three options during the open
+enrollment period in November. Dental and vision coverage are included in every plan at
+no extra cost. Dependents can be added at any time during the year by contacting People.
+
+The 401k plan matches fifty percent of your contribution up to six percent of your salary.
+Contributions vest immediately. You can change your contribution percentage at any time,
+and the change takes effect on the first of the following month.
+
+Parental leave is twelve weeks of fully paid leave for the birth or adoption of a child.
+It must be taken within the first year of the child's arrival. You may split it into two
+blocks, but each block must be at least two weeks long.
+
+Bereavement leave is five paid days for the loss of an immediate family member. Immediate
+family includes spouse, parents, children, and siblings. Additional unpaid time can be
+arranged with your manager.
+
+The office is open from eight in the morning until six in the evening, Monday to Friday.
+Badges work twenty-four hours a day, but access to the server room is limited to the
+infrastructure team. Visitors must sign in at the front desk and wear a visitor badge.
+
+Parking is available in the building garage for employees who opt in at a cost of sixty
+dollars per month. The garage has four hundred spaces. Bicycle storage is free and located
+on level one near the elevator.
+
+The kitchen is stocked with free coffee, tea, and fruit. Employees bring their own lunch
+or order from the cafeteria on the second floor. The cafeteria serves lunch from noon to
+two and dinner is not provided.
+
+The code of conduct requires all employees to treat one another with respect. Harassment
+of any kind is prohibited and will result in disciplinary action up to and including
+termination. Reports can be made confidentially to the People team or through the
+anonymous reporting line.
+
+Security requires that every laptop be encrypted and locked when unattended. Passwords
+must be changed every ninety days and must not be reused. Two-factor authentication is
+mandatory for all company accounts.
+
+Expense reports are submitted through the finance portal and are paid on the fifteenth
+and last day of each month. Reports must be approved by your manager first. Rejected
+reports show the reason in the portal and can be resubmitted after correction.
+
+The performance review cycle runs twice a year, in January and July. Each review includes
+a self-assessment, a peer review, and a meeting with your manager. Promotions are
+considered during the July cycle only.
+
+The annual salary review is tied to the July performance cycle. Merit increases are
+budgeted at four percent on average, but individual raises depend on performance rating
+and market benchmarks. Off-cycle raises require approval from the compensation committee.
+
+Internal transfers require you to have been in your current role for at least twelve
+months. The process starts with a conversation with your manager, followed by an
+application in the careers portal. Transfers become effective on the first of the month
+after approval.
+
+The resignation notice period is four weeks. Notice is given in writing to your manager
+and the People team. Unused vacation days are paid out on your final paycheck.
+
+Alumni are welcome to rejoin within two years of departure without repeating the full
+interview process, provided they left in good standing. Rehired employees retain their
+original hire date for tenure calculations.

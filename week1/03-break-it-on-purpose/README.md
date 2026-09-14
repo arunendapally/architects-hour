@@ -188,4 +188,8 @@ The top-3 still misses the full sentence.
 
 ---
 
+**This day breaks chunking but fixes nothing.** [Day 5](../05-chunking-lab/) turns the
+failure into a number: this char chunker scores 0% recall at small sizes against a
+sentence-aware one's 100%.
+
 *Design notes in [`SPEC.md`](SPEC.md).*
