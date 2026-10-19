@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 
 // === D1: First call to a model, from .NET — provider-agnostic CLI ===
 // Parse args: --provider, --prompt, --model. Prompt defaults to stdin.
+// Added comment for code-review process demo
 
 // Config precedence: env var > user-secret > provider default. User secrets live
 // outside the repo (%APPDATA%\Microsoft\UserSecrets) so public repos stay safe.
